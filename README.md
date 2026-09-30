@@ -1,14 +1,14 @@
-# 研究実験テンプレート
+# exp-templete
 
-DDSPMM と同じ構成を模した Hydra ベースの実験テンプレートです。MNIST の画像識別を最小の動作例として含みます。
+A Hydra-based research experiment template. It includes a small MNIST image classifier as a working example.
 
-## 構成
+## Layout
 
 ```
-exptemplete/                 # インストール可能な Python パッケージ
-  amp/                       # torch.amp の薄いラッパ（autocast / GradScaler）
-  bin/                       # CLI（exptemplete-parse-run-command など）
-  configs/                   # Hydra YAML（対象ごとに分割）
+exptemplete/                 # installable Python package
+  amp/                       # thin torch.amp wrappers (autocast / GradScaler)
+  bin/                       # CLI entry points (exptemplete-parse-run-command, ...)
+  configs/                   # Hydra YAML, split by target
     dataloader/
     train/
     model/
@@ -23,25 +23,25 @@ exptemplete/                 # インストール可能な Python パッケー�
     _tensorboard/
     _hydra/
 recipes/
-  _common/local/             # 学習・評価の Python エントリポイント
-  MNIST/                     # データセットごとの実行スクリプト
+  _common/local/             # Python entry points for train / eval
+  MNIST/                     # dataset-specific run scripts
 ```
 
-Hydra は `exptemplete/configs/config.yaml` をルートに、`dataloader` / `train` / `model` / `optimizer` / `loss` をそれぞれ YAML で切り替え、`hydra.utils.instantiate` でオブジェクト化します。
+Hydra uses `exptemplete/configs/config.yaml` as the root. Switch `dataloader`, `train`, `model`, `optimizer`, and `loss` with YAML groups, then build objects with `hydra.utils.instantiate`.
 
-## セットアップ
+## Setup
 
-Python 3.10 以上を想定しています。
+Python 3.10 or later is required.
 
 ```bash
 git clone https://github.com/takemotoooo-eeic/exp-templete.git
 cd exp-templete
 uv sync
-# または
+# or
 pip install -e .
 ```
 
-パッケージとして import できます。
+The package is importable after install:
 
 ```python
 import exptemplete
@@ -49,22 +49,22 @@ from exptemplete.amp import autocast, should_enable_amp
 from exptemplete.amp.grad_scaler import GradScaler
 ```
 
-インストール後は `exptemplete-parse-run-command` がそのまま使えます。
+`exptemplete-parse-run-command` is available on PATH once the package is installed.
 
-## MNIST の学習
+## Train on MNIST
 
 ```bash
 cd recipes/MNIST
 ./train.sh
 ```
 
-主なオプション（`parse_options.sh` 経由）:
+Common options (`parse_options.sh`):
 
 ```bash
 ./train.sh --tag cnn_mnist --wandb_enabled true --epochs 10 --data_dir /path/to/data
 ```
 
-Hydra のグループ切り替えはスクリプト内の変数で行います。
+Hydra groups are selected by variables in the script:
 
 - `dataloader=mnist`
 - `train=classification`
@@ -72,33 +72,33 @@ Hydra のグループ切り替えはスクリプト内の変数で行います�
 - `optimizer=adam`
 - `loss=cross_entropy`
 
-チェックポイントは `exp/<tag>/exp/model/` に、TensorBoard ログは `exp/<tag>/tensorboard/` に保存されます。
+Checkpoints go to `exp/<tag>/exp/model/`. TensorBoard logs go to `exp/<tag>/tensorboard/`.
 
 ```bash
 tensorboard --logdir exp/<tag>/tensorboard
 ```
 
-wandb を使う場合は `./train.sh --wandb_enabled true` とし、事前に `wandb login` してください。
+To use wandb, run `wandb login` first, then `./train.sh --wandb_enabled true`.
 
-## MNIST の評価
+## Evaluate on MNIST
 
 ```bash
 ./eval.sh --checkpoint exp/<tag>/exp/model/best_epoch.pth
 ```
 
-## 新しいデータセットを足す手順
+## Add a new dataset
 
-1. `exptemplete/utils/data/` に Dataset を追加する
-2. `exptemplete/configs/dataloader/<name>.yaml` を書く
-3. 必要なら `model` / `loss` / `train` の YAML も追加する
-4. `recipes/<DATASET>/` に `train.sh` / `eval.sh` を置き、`local` を `_common/local` へ symlink する
+1. Add a Dataset class under `exptemplete/utils/data/`.
+2. Add `exptemplete/configs/dataloader/<name>.yaml`.
+3. Add `model` / `loss` / `train` YAML files if needed.
+4. Create `recipes/<DATASET>/` with `train.sh` and `eval.sh`, and symlink `local` to `_common/local`.
 
 ## AMP
 
-学習ループは `exptemplete.amp` を使っています。半精度にする場合:
+The training loop uses `exptemplete.amp`. For mixed precision:
 
 ```bash
 ./train.sh train.torch_dtype=float16
 ```
 
-`float16` / `bfloat16` のときだけ autocast と GradScaler が有効になります。
+autocast and GradScaler are enabled only when `torch_dtype` is `float16` or `bfloat16`.
