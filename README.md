@@ -34,7 +34,7 @@ Hydra は `exptemplete/configs/config.yaml` をルートに、`dataloader` / `tr
 Python 3.10 以上を想定しています。
 
 ```bash
-git clone https://github.com/takemotooo-eeic/exp-templete.git
+git clone https://github.com/takemotoooo-eeic/exp-templete.git
 cd exp-templete
 uv sync
 # または

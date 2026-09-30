@@ -3,7 +3,7 @@ name = "exptemplete"
 readme = "README.md"
 description = "Research experiment template with Hydra configs, AMP, TensorBoard, and wandb"
 authors = [
-    {name = "takemotooo-eeic", email = "takemoto-kengo2262@g.ecc.u-tokyo.ac.jp"}
+    {name = "takemotoooo-eeic", email = "takemoto-kengo2262@g.ecc.u-tokyo.ac.jp"}
 ]
 requires-python = ">=3.10.0,<3.13"
 dependencies = [
