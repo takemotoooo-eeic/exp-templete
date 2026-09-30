@@ -32,15 +32,15 @@ ENV/
 .python-version
 
 # Experiments and logs
-exp/
-tensorboard/
-logs/
-outputs/
-wandb/
-runs/
-results/
-data/
-audio/
+/exp/
+/tensorboard/
+/logs/
+/outputs/
+/wandb/
+/runs/
+/results/
+/data/
+/audio/
 
 # Test / coverage
 .pytest_cache/
