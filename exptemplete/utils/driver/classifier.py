@@ -133,10 +133,7 @@ class ClassifierTrainer(Driver):
 
         if self.wandb_logger.enabled:
             step = wandb_step or global_step
-            caption = " | ".join(
-                f"y={int(label)} p={int(pred)}"
-                for label, pred in zip(labels[:8].cpu(), predictions[:8].cpu())
-            )
+            caption = " | ".join(f"y={int(label)} p={int(pred)}" for label, pred in zip(labels[:8].cpu(), predictions[:8].cpu()))
             self.wandb_logger.add_image("samples/images", vis, global_step=step)
             self.logger.info(f"Sample predictions: {caption}")
 
@@ -325,9 +322,7 @@ class ClassifierTrainer(Driver):
                 self.save_checkpoint(last_path.format(epoch=self.epoch))
 
             self.logger.info(
-                f"[Epoch {self.epoch}]: "
-                f"training_loss={training_metrics['training_loss']:.4f}, "
-                f"training_accuracy={training_metrics['training_accuracy']:.4f}"
+                f"[Epoch {self.epoch}]: training_loss={training_metrics['training_loss']:.4f}, training_accuracy={training_metrics['training_accuracy']:.4f}"
             )
             validation_metrics = {}
 
