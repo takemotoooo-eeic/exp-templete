@@ -7,6 +7,25 @@
 - **ベースとなるコードは変更しない。** 実験ごとに書き足すのはモデル・ロス・データセット・設定（YAML）・レシピだけにする。
 - 新しい要素は **新しいクラス / 新しいファイル / 新しい YAML** として追加し、Hydra の `_target_` で差し替える。既存クラスを書き換えて挙動を変えない。
 - ベースコードに不具合や不足があっても、勝手に直さず、内容と理由を報告して判断を仰ぐ。
+- 例外として、**プロジェクト名（`exp-templete` / `exptemplete`）はベースコードを含めて変更してよい**（下の「プロジェクト名の変更」を参照）。
+- 以下の説明に出てくる `exptemplete` は、改名した場合は新しいパッケージ名に読み替える。
+
+## プロジェクト名の変更
+
+このリポジトリは GitHub のテンプレートリポジトリとして使う想定。テンプレートから新しいリポジトリを作ったら、まずプロジェクト名を変更してよい。変更するのは **名前の置き換えだけ** で、ロジックには手を入れない。
+
+| 名前 | 使われている場所 |
+| --- | --- |
+| パッケージ名 `exptemplete` | ディレクトリ `exptemplete/`、`pyproject.toml`（`name`、`[project.scripts]`、`packages.find.include`、`package-data`、`dynamic.version`）、全 Python ファイルの import、YAML の `_target_`、`recipes/_common/local/*.py` |
+| CLI 名 `exptemplete-parse-run-command` | `pyproject.toml` の `[project.scripts]`、`recipes/*/train.sh`、`recipes/*/eval.sh` |
+| リポジトリ名 `exp-templete` | `README.md`（タイトル・clone URL）、`configs/train/*.yaml` の `wandb.project` |
+
+手順:
+
+1. `git mv exptemplete <new_package>` でディレクトリを改名する。
+2. 上の表の場所を `grep -rn "exptemplete\|exp-templete" . --exclude-dir=.git --exclude=uv.lock` で洗い出して置き換える。
+3. `uv lock` で `uv.lock` を更新する。
+4. `uv run pre-commit run --all-files` を通し、`./train.sh --epochs 1` で動作を確認する。
 
 ## 変更してはいけないもの（ベースコード）
 
@@ -108,7 +127,7 @@ uv run pre-commit run --all-files
 
 ## 実装後のチェックリスト
 
-1. ベースコード（上の「変更してはいけないもの」）に差分が出ていないこと（`git diff --stat` で確認）。
+1. ベースコード（上の「変更してはいけないもの」）に、プロジェクト名の置き換え以外の差分が出ていないこと（`git diff --stat` で確認）。
 2. 追加したクラスが `__all__` と YAML の `_target_` で正しく参照されていること。
 3. `uv run pre-commit run --all-files` が通ること。
 4. 少ないエポックで学習が最後まで回ること（例: `./train.sh --epochs 1`）。

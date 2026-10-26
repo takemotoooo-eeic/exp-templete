@@ -29,6 +29,10 @@ recipes/
 
 Hydra uses `exptemplete/configs/config.yaml` as the root. Switch `dataloader`, `train`, `model`, `optimizer`, and `loss` with YAML groups, then build objects with `hydra.utils.instantiate`.
 
+## Use as a template
+
+This repository is a GitHub template. Click **Use this template** → **Create a new repository** on GitHub to start a new project from it. You may then rename the project (`exp-templete` / `exptemplete`); see "プロジェクト名の変更" in [AGENTS.md](AGENTS.md).
+
 ## Setup
 
 Python 3.10 or later is required.
